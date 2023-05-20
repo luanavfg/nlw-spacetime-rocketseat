@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id @default(uuid())
+  githubId  Int    @unique
+  name      String
+  login     String
+  avatarUrl String
+
+  // Represents the relationship, it won't be a column in db
+  Memory Memory[]
+}
+
+model Memory {
+  id       String   @id @default(uuid())
+  userId   String
+  coverUrl String
+  content  String
+  isPublic Boolean  @default(false)
+  cratedAt DateTime @default(now())
+
+  // Represents the relationship, it won't be a column in db
+  user User @relation(fields: [userId], references: [id])
+}
