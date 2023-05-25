@@ -2,10 +2,19 @@ import fastify from 'fastify'
 import cors from '@fastify/cors'
 import { memoriesRoutes } from './routes/memories'
 import 'dotenv/config'
+import multipart from '@fastify/multipart'
 import { authRoutes } from './routes/auth'
 import jwt from '@fastify/jwt'
+import { uploadRoutes } from './routes/upload'
+import { resolve } from 'node:path'
 
 const app = fastify()
+
+app.register(multipart)
+app.register(require('@fastify/static'), {
+  root: resolve(__dirname, '../uploads'),
+  prefix: '/uploads',
+})
 app.register(
   cors,
   { origin: true }, // Any frontend url can access the API
@@ -13,6 +22,7 @@ app.register(
 app.register(jwt, { secret: 'spacetime' })
 app.register(authRoutes)
 app.register(memoriesRoutes)
+app.register(uploadRoutes)
 
 app
   .listen({
@@ -22,5 +32,3 @@ app
   .then(() => {
     console.log('HTTP server running on http://localhost:3333')
   })
-
-// API RESTful - existem alguns padrões a serem seguidos
